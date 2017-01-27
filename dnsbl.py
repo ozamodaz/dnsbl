@@ -59,10 +59,10 @@ def get_hosts(inventory):
         networks = set(network.findall(inventory))
     else:
         try:
-            inventory_file = open(inventory, 'r').read()
+            inventory_file = open(inventory[0], 'r').read()
             networks = set(network.findall(inventory_file))
         except Exception as exception:
-            print('Fail! \n %s' % exception)
+            print('Fail! %s' % exception)
             sys.exit(0)
     for network in networks:
         hosts.update(str(ip) for ip in IPNetwork(network))
@@ -91,7 +91,12 @@ def dnsbl_query(ip, bl):
     try:
         resolver = dns.resolver.Resolver()
         query = '.'.join(reversed(str(ip).split("."))) + "." + bl
-        A = str(resolver.query(query, "A")[0])
+        try:
+            A = str(resolver.query(query, "A")[0])
+        except Exception as exception:
+            msg = '%s %s %s' % (bl, ip, exception)
+            log(msg)
+            pass
         try:
             TXT = str(resolver.query(query, "TXT")[0])
         except dns.resolver.NoAnswer:
@@ -132,7 +137,7 @@ if args.output:
 hosts = get_hosts(inventory)
 dnsbl_lists = fetch_dnsbl_lists()
 total_hosts = len(hosts)
-
+start = datetime.now()
 for ip in hosts:
     counter += 1
     ip_result = {}
@@ -142,7 +147,7 @@ for ip in hosts:
             worker.add_done_callback(check_answer)
     sys.stdout.write("Progress: %s of %s  \r" % (counter, total_hosts))
     sys.stdout.flush()
-
+finish = datetime.now()
 sorted_hosts = sorted(black_list.keys(),
                       key=lambda ip: len(black_list[ip]), reverse=True)
 
@@ -154,3 +159,5 @@ for ip in sorted_hosts:
             output_file.write(msg)
         else:
             print(msg)
+print(finish - start)
+print(total_hosts)
