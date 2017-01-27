@@ -74,20 +74,13 @@ def fetch_dnsbl_lists():
     regexp = 'dnsbl=([A-Za-z0-9-\.]+)'
     headers = {'User-Agent': 'Mozilla/5.0'}
     req = Request(url, headers=headers)
+    local_lists = set(BASE_LISTS)
     fresh_lists = set()
-    local_lists = set()
     try:
         page_html = str(urlopen(req).read())
         fresh_lists.update(re.findall(regexp, page_html))
     except Exception as exception:
         msg = 'Failed to fetch dnsbl lists from web source: %s' % exception
-        log(msg)
-        pass
-    try:
-        from dnsbl_conf import BASE_LISTS
-        local_lists.update(BASE_LISTS)
-    except Exception as exception:
-        msg = 'Failed to fetch dnsbl lists from file: %s' % exception
         log(msg)
         pass
     return fresh_lists | local_lists
