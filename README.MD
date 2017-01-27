@@ -1,6 +1,6 @@
 
 DNSBL Checker
-=====================================
+----
 
 ##### Simple multi-threading tool for checking IP-addresses
 ##### or CIDR-networks against known black-lists.
@@ -9,6 +9,7 @@ DNSBL Checker
 
 #### Performance:
 120-160 IP-addresses per minute without significant server load
+
 (checking each against 58 DNSBLs; max_workers = 60)
 
 #### Used Lists :
