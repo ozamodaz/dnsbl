@@ -7,14 +7,17 @@ DNSBL Checker
 
 ----
 
-##### Performance:
+#### Performance:
 120-160 IP-addresses per minute without significant server load
 (checking each against 58 DNSBLs; max_workers = 60)
 
-##### Used Lists :
+#### Used Lists :
 The script is trying to fetch active DNSBLs from following resource:
+
 http://www.dnsbl.info/dnsbl-list.php
+
 You can specify additional / fallback set of DNSBLs in the top of script.
+
 #### Usage
 ####
 ```sh
@@ -24,6 +27,7 @@ $ python dnsbl.py -i 192.30.253.112 192.30.253.113
 
 $ python dnsbl.py -i 192.30.253.0/24, 192.30.253.0/23 -o output.txt
 ```
+
 #### Options
 ####
 ```sh
