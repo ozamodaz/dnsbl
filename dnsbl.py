@@ -137,7 +137,6 @@ if args.output:
 hosts = get_hosts(inventory)
 dnsbl_lists = fetch_dnsbl_lists()
 total_hosts = len(hosts)
-start = datetime.now()
 for ip in hosts:
     counter += 1
     ip_result = {}
@@ -147,7 +146,6 @@ for ip in hosts:
             worker.add_done_callback(check_answer)
     sys.stdout.write("Progress: %s of %s  \r" % (counter, total_hosts))
     sys.stdout.flush()
-finish = datetime.now()
 sorted_hosts = sorted(black_list.keys(),
                       key=lambda ip: len(black_list[ip]), reverse=True)
 
@@ -159,5 +157,3 @@ for ip in sorted_hosts:
             output_file.write(msg)
         else:
             print(msg)
-print(finish - start)
-print(total_hosts)
