@@ -91,12 +91,7 @@ def dnsbl_query(ip, bl):
     try:
         resolver = dns.resolver.Resolver()
         query = '.'.join(reversed(str(ip).split("."))) + "." + bl
-        try:
-            A = str(resolver.query(query, "A")[0])
-        except Exception as exception:
-            msg = '%s %s %s' % (bl, ip, exception)
-            log(msg)
-            pass
+        A = str(resolver.query(query, "A")[0])
         try:
             TXT = str(resolver.query(query, "TXT")[0])
         except dns.resolver.NoAnswer:
@@ -104,11 +99,7 @@ def dnsbl_query(ip, bl):
         answer = (ip, bl, A, TXT)
     except dns.resolver.NXDOMAIN:
         pass
-    except dns.exception.Timeout as exception:
-        msg = '%s %s %s' % (bl, ip, exception)
-        log(msg)
-        pass
-    except dns.resolver.NoAnswer as exception:
+    except Exception as exception:
         msg = '%s %s %s' % (bl, ip, exception)
         log(msg)
         pass
