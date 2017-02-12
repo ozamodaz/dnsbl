@@ -24,12 +24,14 @@ You may also want to change following settings
 max_workers = 60
 verbose = False
 log_file = 'dnsbl.log'
+skip_slow = True
 """
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
 import argparse
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
+from datetime import timedelta
 import dns.resolver
 from netaddr import IPNetwork
 import re
@@ -88,6 +90,7 @@ def fetch_dnsbl_lists():
 
 def dnsbl_query(ip, bl):
     answer = None
+    start = datetime.now()
     try:
         resolver = dns.resolver.Resolver()
         query = '.'.join(reversed(str(ip).split("."))) + "." + bl
@@ -95,7 +98,7 @@ def dnsbl_query(ip, bl):
         try:
             TXT = str(resolver.query(query, "TXT")[0])
         except dns.resolver.NoAnswer:
-            TXT = ''
+            TXT = '-'
         answer = (ip, bl, A, TXT)
     except dns.resolver.NXDOMAIN:
         pass
@@ -103,6 +106,10 @@ def dnsbl_query(ip, bl):
         msg = '%s %s %s' % (bl, ip, exception)
         log(msg)
         pass
+    finish = datetime.now()
+    delta = finish - start
+    if skip_slow and delta > timedelta(seconds=15):
+        dnsbl_lists.discard(bl)
     return answer
 
 
